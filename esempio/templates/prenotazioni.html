@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Prenotazioni{% endblock %}
+
+{% block content %}
+<h2 style="text-align: center;">Le Mie Prenotazioni</h2>
+<div class="filtro-tipo-wrapper">
+  <form action="/filtratipo" method="POST">
+    <label for="Tipo">Filtra per Tipo</label>
+    <select name="nome" id="nome" required>
+      {% for element in tipi %}
+      <option value="{{element[0]}}">{{element[1]}}</option>
+      {% endfor %}
+    </select>
+    <input type="submit" value="Cerca">
+  </form>
+</div>
+
+
+
+<div class="carousel-container">
+  <div class="carousel-wrapper" id="carouselWrapper">
+    {% for prodotto in prodotti %}
+    <div class="carousel-slide">
+        <img src="{{ url_for('foto', id=prodotto[8]) }}"
+     alt="Foto di {{ prodotto[1] }}"
+     class="book-image"
+     loading="lazy">
+      <h3>{{ prodotto[1] }}</h3>
+      <p><strong>Quantità prenotata:</strong> {{ prodotto[2] }}</p>
+      <p><strong>Prezzo per unità:</strong> {{ prodotto[3] }} €</p>
+      <p><strong>Tipo:</strong> {{ prodotto[7] }}</p>
+    
+        <form action="/eliminaprenotazione/{{ prodotto[9] }}" method="POST">
+  <input type="hidden" name="idprenotazione" value="{{ prodotto[9] }}"> 
+  <input type="submit" value="Elimina">                              
+  </form>
+    </div>
+    {% endfor %}
+  </div>
+
+</div>
+
+
+{% endblock %}
