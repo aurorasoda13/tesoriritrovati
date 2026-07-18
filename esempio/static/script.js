@@ -47,3 +47,37 @@ document.getElementById("imageModal").addEventListener("click", (e) => {
     e.currentTarget.style.display = "none";
   }
 });
+
+// Overlay di conferma per modifica profilo
+const form = document.querySelector('form[action*="salva_profilo"]');
+const overlay = document.getElementById('confirmOverlay');
+const cancelBtn = document.getElementById('cancelConfirm');
+const confirmForm = document.getElementById('confirmForm');
+
+if (form && overlay) {
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    // Copia i valori nel form di conferma
+    document.getElementById('confirmNome').value = document.getElementById('nome').value;
+    document.getElementById('confirmEmail').value = document.getElementById('email').value;
+    document.getElementById('confirmPassword').value = document.getElementById('password').value;
+
+    overlay.style.display = 'flex';
+  });
+
+  cancelBtn.addEventListener('click', function () {
+    overlay.style.display = 'none';
+  });
+}
+// Occhietto mostra/nascondi password
+const togglePassword = document.getElementById('togglePassword');
+const passwordInput = document.getElementById('password');
+
+if (togglePassword) {
+  togglePassword.addEventListener('click', () => {
+    const isPassword = passwordInput.type === "password";
+    passwordInput.type = isPassword ? "text" : "password";
+    togglePassword.textContent = isPassword ? "🙈" : "👁️";
+  });
+}
