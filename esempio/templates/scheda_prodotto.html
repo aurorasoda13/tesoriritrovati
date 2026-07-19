@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Scheda Prodotto{% endblock %}
+
+{% block content %}
+
+<div class="scheda-prodotto-container">
+
+  <div class="scheda-prodotto-grid">
+
+    <!-- COLONNA SINISTRA -->
+    <div class="scheda-colonna-sinistra">
+
+      <div class="scheda-immagine-wrapper">
+        {% if prodotto[2] == 0 %}
+        <div class="sold-out-badge">Sold Out</div>
+        {% endif %}
+
+        <img src="{{ url_for('foto', id=prodotto[8]) }}"
+             alt="Foto di {{ prodotto[1] }}"
+             class="scheda-immagine"
+             loading="lazy">
+      </div>
+
+      <div class="scheda-info-sotto">
+        <h2 class="scheda-titolo">{{ prodotto[1] }}</h2>
+
+        <p><strong>Disponibilità:</strong> {{ prodotto[2] }}</p>
+        <p><strong>Prezzo:</strong> € {{ prodotto[3] }}</p>
+        <p><strong>Tipo:</strong> {{ prodotto[7] }}</p>
+
+        {% if utente[0] != 1 %}
+        <form action="/prenota/{{ prodotto[0] }}" method="POST" class="scheda-bottone-wrapper">
+          <input type="hidden" name="IDProdotto" value="{{ prodotto[0] }}">
+          {% if prodotto[2] == 0 %}
+          <input type="submit" value="Non disponibile" disabled class="disabled-button">
+          {% else %}
+          <input type="submit" value="Prenota">
+          {% endif %}
+        </form>
+        {% endif %}
+
+        {% if utente[0] == 1 %}
+        <div class="bottoni-admin scheda-admin">
+          <form action="/modifica/{{ prodotto[0] }}" method="POST">
+            <input type="hidden" name="IDProdotto" value="{{ prodotto[0] }}">
+            <input type="submit" value="Modifica">
+          </form>
+
+          <form action="/elimina/{{ prodotto[0] }}" method="POST">
+            <input type="hidden" name="IDProdotto" value="{{ prodotto[0] }}">
+            <input type="submit" value="Elimina">
+          </form>
+        </div>
+        {% endif %}
+      </div>
+
+    </div>
+
+    <!-- COLONNA DESTRA -->
+    <div class="scheda-colonna-destra">
+      <h3>Descrizione</h3>
+      <div class="scheda-descrizione descrizione">
+        {{ prodotto[9] }}
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+{% endblock %}

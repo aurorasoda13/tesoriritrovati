@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Prenotazioni{% endblock %}
+
+{% block content %}
+<h2 style="text-align: center;">Prenotazioni</h2>
+
+{% for prodotto in prodotti %}
+<div class="product-card">
+    <h3>{{ prodotto[1] }}</h3>
+    <p>Quantità: {{ prodotto[2] }}</p>
+    <p>Prezzo: {{ prodotto[3] }}</p>
+    <p>Tipo: {{ prodotto[4] }}</p>
+    <p>Nome Utente: {{ prodotto[6] }}</p>
+    <p>Mail Utente: {{ prodotto[7] }}</p>
+
+    {% if prodotto[2] > 1 %}
+        <!-- Bottone che apre overlay -->
+        <button class="open-overlay" data-id="{{ prodotto[5] }}" data-max="{{ prodotto[2] }}">
+            Contrassegna come completata
+        </button>
+    {% else %}
+        <!-- Se quantità = 1, invio diretto -->
+        <form action="/contrassegna/{{ prodotto[5] }}" method="POST">
+            <input type="hidden" name="quantita" value="1">
+            <input type="submit" value="Contrassegna come completata">
+        </form>
+    {% endif %}
+</div>
+{% endfor %}
+
+<!-- OVERLAY -->
+<div id="overlay" class="overlay" style="display:none;">
+    <div class="overlay-content">
+        <h3>Seleziona quantità da contrassegnare</h3>
+
+        <form id="overlay-form" method="POST">
+            <label>Quantità:</label>
+            <input type="number" id="overlay-qnt" name="quantita" min="1" required>
+
+            <button type="submit">Conferma</button>
+            <button type="button" id="close-overlay">Annulla</button>
+        </form>
+    </div>
+</div>
+
+<style>
+.overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.overlay-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
+    text-align: center;
+}
+</style>
+
+<script>
+document.querySelectorAll(".open-overlay").forEach(btn => {
+    btn.addEventListener("click", () => {
+        const id = btn.dataset.id;
+        const max = btn.dataset.max;
+
+        // Imposto max quantità
+        const qntInput = document.getElementById("overlay-qnt");
+        qntInput.max = max;
+        qntInput.value = 1;
+
+        // Imposto action del form
+        const form = document.getElementById("overlay-form");
+        form.action = "/contrassegna/" + id;
+
+        // Mostro overlay
+        document.getElementById("overlay").style.display = "flex";
+    });
+});
+
+document.getElementById("close-overlay").addEventListener("click", () => {
+    document.getElementById("overlay").style.display = "none";
+});
+</script>
+
+{% endblock %}

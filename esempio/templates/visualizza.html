@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block title %}Catalogo{% endblock %}
+
+{% block content %}
+<h2 style="text-align: center;">Catalogo Prodotti</h2>
+<div class="filtro-wrapper">
+  <div class="filtro-prezzo-wrapper">
+  <form action="/filtraprezzo" method="POST">
+    <label for="opzione">Filtra per prezzo</label>
+    <select name="opzione" id="opzione" required>
+      <option value="1" {% if tipo_sceltoo == 1 %}selected{% endif %}>Prezzo crescente</option>
+      <option value="2" {% if tipo_sceltoo == 2 %}selected{% endif %}>Prezzo decrescente</option>
+    </select>
+    <input type="submit" value="Cerca">
+  </form>
+  </div>
+<form action="/solo_disp" method="POST" id="formDisp">
+    <label class="switch">
+        <input type="checkbox" name="solo_disp" value="1"
+               {% if solo_disp %}checked{% endif %}
+               onchange="document.getElementById('formDisp').submit();">
+        <span class="slider"></span>
+    </label>
+    <span>Mostra solo disponibili</span>
+</form>
+
+
+
+<div class="filtro-tipo-wrapper">
+  <form action="/filtratipo" method="POST">
+    <label for="Tipo">Filtra per Tipo</label>
+    <select name="nome" id="nome" required>
+      {% for element in tipi %}
+      <option value="{{ element[0] }}"
+        {% if tipo_scelto == element[0] %}selected{% endif %}>
+    {{ element[1] }}
+</option>
+      {% endfor %}
+    </select>
+    <input type="submit" value="Cerca">
+  </form>
+</div>
+</div>
+
+
+<div class="carousel-container">
+  <div class="carousel-wrapper" id="carouselWrapper">
+    {% for prodotto in prodotti %}
+    <div class="carousel-slide" onclick="window.location.href='/scheda_prodotto/{{ prodotto[0] }}'"
+     style="cursor: pointer;">
+      {% if prodotto[2] == 0 %}
+<div class="sold-out-badge">Sold Out</div>
+{% endif %}
+
+        <img src="{{ url_for('foto', id=prodotto[8]) }}"
+     alt="Foto di {{ prodotto[1] }}"
+     class="book-image"
+     loading="lazy">
+      <h3>{{ prodotto[1] }}</h3>
+      <p><strong>Disponibilità:</strong> {{ prodotto[2] }}</p>
+      <p><strong>Prezzo:</strong>€ {{ prodotto[3] }} </p>
+      <p><strong>Tipo:</strong> {{ prodotto[7] }}</p>
+        {% if utente[0] != 1 %}
+      <form action="/prenota/{{ prodotto[0] }}" method="POST">
+        <input type="hidden" name="IDProdotto" value="{{ prodotto[0] }}">
+        {% if prodotto[2] == 0 %}
+        <input type="submit" value="Non disponibile" disabled class="disabled-button">
+        {% else %}
+        <input type="submit" value="Prenota">
+        {% endif %}
+
+      </form>
+      {% endif %}
+      {% if utente[0] == 1 %}
+        <div class="bottoni-admin">
+    <form action="/modifica/{{ prodotto[0] }}" method="POST">
+        <input type="hidden" name="IDProdotto" value="{{ prodotto[0] }}">
+        <input type="submit" value="Modifica">
+    </form>
+
+    <form action="/elimina/{{ prodotto[0] }}" method="POST">
+        <input type="hidden" name="IDProdotto" value="{{ prodotto[0] }}">
+        <input type="submit" value="Elimina">
+    </form>
+</div>
+
+
+  {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% if utente[0] == 1 %}
+<div class="carousel-slide add-product">
+
+    <a href="{{ url_for('aggiungi_prodotto') }}" class="add-product-link">
+        <div class="plus">+</div>
+        <p>Aggiungi prodotto</p>
+    </a>
+</div>
+{% endif %}
+
+</div>
+
+
+{% endblock %}
